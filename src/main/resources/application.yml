@@ -1,0 +1,80 @@
+#通用配置
+spring:
+  thymeleaf:
+    #关闭Thymeleaf缓存
+    cache: false
+  ###使用那个配置
+  profiles:
+    active: prod
+  cloud:
+    sentinel:
+      feign:
+        enabled: true
+      transport:
+        dashboard: 127.0.0.1:8080
+      eager: true
+    nacos:
+      server-addr: 180.76.184.26:8848
+  application:
+    name: learning-provider
+    #redis
+    admin:
+      enabled: true
+  redis:
+    password:
+   #数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+##RocketMQ
+  rocketmq:
+    name-server: 127.0.0.1:9876
+    producer:
+      group: producer-group
+  ####监控
+management:
+  endpoint:
+    health:
+      show-details: always
+  ###info 信息配置
+info:
+  aouther: Vincent
+  email: sec1995@hotmail.com
+
+###RocketMQ
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: learning-producer
+---
+#开发环境配置文件
+spring:
+  profiles: dev
+  cloud:
+    nacos:
+      discovery:
+#        namespace: space_private
+        cluster-name: BJ
+  datasource:
+    username: root
+    password: Sec1995@
+    url: jdbc:mysql://127.0.0.1:3306/imooc_ad_data?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+server:
+  port: 9601
+
+---
+#生产环境配置文件
+spring:
+  profiles: prod
+  cloud:
+    nacos:
+      discovery:
+        cluster-name: NJ
+  datasource:
+    username: root
+    password: Sec1995@
+    url: jdbc:mysql://127.0.0.1:3306/imooc_ad_data?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+server:
+  port: 9602
+  tomcat:
+    max-threads: 400
+    max-connections: 1000
