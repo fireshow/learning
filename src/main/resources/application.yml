@@ -8,13 +8,22 @@ spring:
     active: prod
   cloud:
     sentinel:
-      feign:
-        enabled: true
       transport:
         dashboard: 127.0.0.1:8080
       eager: true
     nacos:
       server-addr: 180.76.184.26:8848
+#stream配置
+    stream:
+      rocketmq:
+        binder:
+          name-server: 127.0.0.1:9876
+      bindings:
+        provider-channel:
+          destination: book
+          group: book-provider
+          producer:
+            enable: true
   application:
     name: learning-provider
     #redis
@@ -23,13 +32,9 @@ spring:
   redis:
     password:
    #数据源配置
+    database: 1
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-##RocketMQ
-  rocketmq:
-    name-server: 127.0.0.1:9876
-    producer:
-      group: producer-group
   ####监控
 management:
   endpoint:
@@ -52,7 +57,7 @@ spring:
   cloud:
     nacos:
       discovery:
-#        namespace: space_private
+        namespace: space_private
         cluster-name: BJ
   datasource:
     username: root
