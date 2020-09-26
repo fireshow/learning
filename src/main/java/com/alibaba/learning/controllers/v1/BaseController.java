@@ -1,6 +1,7 @@
 package com.alibaba.learning.controllers.v1;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.learning.repository.BookMessageRepository;
 import com.alibaba.learning.repository.BookRepository;
 import com.alibaba.learning.entity.Book;
 import com.alibaba.learning.entity.GoodsInfo;
@@ -8,8 +9,10 @@ import com.alibaba.learning.service.IMessageService;
 import com.alibaba.learning.utils.EsUtil;
 import com.alibaba.learning.utils.HtmlParseUtil;
 import com.github.javafaker.Faker;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.support.RocketMQHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,17 +29,14 @@ import java.util.concurrent.TimeUnit;
  **/
 @RestController
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BaseController {
-    @Resource
-    private  HtmlParseUtil parseUtil;
-    @Resource
-    private  BookRepository bookRepository;
-    @Resource
-    private  EsUtil esUtil;
-    @Resource
-    private  Faker faker;
-    @Resource
-    private IMessageService rocketMessageService;
+    private final HtmlParseUtil parseUtil;
+    private final BookRepository bookRepository;
+    private final EsUtil esUtil;
+    private final IMessageService rocketMessageService;
+    private final BookMessageRepository bookMessageRepository;
+
 
     @SentinelResource("hello")
     @GetMapping(value = "/hello/{name}")
@@ -86,14 +86,7 @@ public class BaseController {
     public ResponseEntity<Book> save(@RequestBody(required = false)  Book book){
         if (null==book)
         {
-            book= Book.builder()
-                    .author(faker.book().author())
-                    .bookName(faker.book().title())
-                    .content(faker.leagueOfLegends().masteries())
-                    .id(faker.idNumber().valid())
-                    .price(faker.random().nextDouble())
-                    .printDate(faker.date().past(365*50, TimeUnit.DAYS))
-                    .build();
+            book=Book.getRandomEntity();
         }
         log.debug("send message to [topic-book]");
         Map<String,Object>headers =new HashMap<>();
@@ -103,5 +96,21 @@ public class BaseController {
         log.debug("send  traction message to [tx-book-topic]");
         rocketMessageService.sendTransactionMessage("tx-book-topic",book,headers);
         return new ResponseEntity<>(bookRepository.save(book), HttpStatus.OK);
+    }
+    @GetMapping("/book-stream")
+    public ResponseEntity<Book> addBookJf(@RequestBody(required = false)  Book book)
+    {
+        if (null==book)
+        {
+            book=Book.getRandomEntity();
+        }
+        Boolean send_res = bookMessageRepository.sendMessage(book);
+        if (send_res)
+        {
+            log.info("Send Message Success!");
+            return ResponseEntity.ok(book);
+        }else {
+            return  ResponseEntity.badRequest().build();
+        }
     }
 }

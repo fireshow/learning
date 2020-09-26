@@ -19,11 +19,12 @@ spring:
         binder:
           name-server: 127.0.0.1:9876
       bindings:
-        provider-channel:
+        book-in:
           destination: book
-          group: book-provider
-          producer:
-            enable: true
+          group: book-consumer-group
+        book-out:
+          destination: book
+          group: book-provider-group
   application:
     name: learning-provider
     #redis
@@ -44,12 +45,6 @@ management:
 info:
   aouther: Vincent
   email: sec1995@hotmail.com
-
-###RocketMQ
-rocketmq:
-  name-server: 127.0.0.1:9876
-  producer:
-    group: learning-producer
 ---
 #开发环境配置文件
 spring:
