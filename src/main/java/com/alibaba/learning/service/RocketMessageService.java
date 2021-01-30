@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
@@ -41,5 +42,10 @@ public class RocketMessageService implements IMessageService {
                 ,
                         message
         ) ;
+    }
+
+    @Override
+    public void inokeReomteService(Map<String, Object> params) {
+
     }
 }

@@ -16,14 +16,17 @@ class LearningApplicationTests {
 	private static final int THREAD_COUNT = 10;
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
 	/* 创建Semaphore对象实例，构造函数的参数指定信号量的数目，为了方便说明问题，设为3 */
-	private final Semaphore semaphore = new Semaphore(3);
-	private final CountDownLatch latch=new CountDownLatch(THREAD_COUNT);
+	private static final Semaphore semaphore = new Semaphore(3);
+	private static final CountDownLatch latch=new CountDownLatch(THREAD_COUNT);
 
 	@Test
 	void contextLoads() {
 	}
-	@Test
-	void testSemaphore() throws InterruptedException {
+
+	public static void main(String[] args) throws InterruptedException {
+		testSemaphore();
+	}
+	static void testSemaphore() throws InterruptedException {
 		/* 创建线程读取数据，并尝试获取数据库连接，将数据存储到数据库中 */
 		for(int i = 0;i < THREAD_COUNT;i++){
 			executorService.execute(() -> {
@@ -34,7 +37,7 @@ class LearningApplicationTests {
 					/* 通过acquire 函数获取数据库连接，如果成功将数据存储到数据库 */
 					semaphore.acquire();
 					log.info("{} got semaphore*******",Thread.currentThread().getName());
-					Thread.sleep((long) (Math.random()*1000));
+					Thread.sleep(2000);
 				}catch (InterruptedException e){
 					e.printStackTrace();
 				}finally {

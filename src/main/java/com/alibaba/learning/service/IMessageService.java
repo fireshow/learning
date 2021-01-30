@@ -1,8 +1,6 @@
 package com.alibaba.learning.service;
 
 
-import org.springframework.messaging.Message;
-
 import java.util.Map;
 
 /**
@@ -13,4 +11,5 @@ import java.util.Map;
 public interface IMessageService {
      void sendMessage(String topic,Object message,Map<String,Object> headers);
      void sendTransactionMessage(String topic, Object message, Map<String,Object> header);
+     void inokeReomteService(Map<String,Object> params);
 }
